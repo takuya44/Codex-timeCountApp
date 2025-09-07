@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <!--
+      Learning Next 風デザインルール（docs/DESIGN_RULE.md）に準拠。
+      - 配色: blue-500/600/700, gray-900 他（コントラスト 4.5:1 以上）
+      - 余白: 8px ベース、タッチターゲット最小 44px
+      - 影/角丸/フォーカスリング: すべての押下可能要素に明確なフィードバック
+      - アクセシビリティ: aria-live, 役割（tab, tablist）, 見出し階層
+    -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>タイマー | Learning Next</title>
+    <meta name="description" content="Learning Next デザインルールに準拠したタイマーアプリ" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- サイト共通ヘッダー（視覚上の区切り + ページタイトル） -->
+    <header class="site-header" role="banner">
+      <div class="container">
+        <h1 class="site-title">タイマー</h1>
+      </div>
+    </header>
+
+    <!-- メインコンテンツ領域 -->
+    <main id="main" class="container" role="main">
+      <!-- タイマー UI を 1 カードに集約（カードは境界線+影で可視化） -->
+      <section class="card" aria-labelledby="timer-heading">
+        <div class="card-header">
+          <h2 id="timer-heading" class="card-title">タイマー</h2>
+          <p class="card-subtitle">ストップウォッチ / カウントダウン</p>
+        </div>
+
+        <!-- モード切替（セグメントコントロール）。キーボード操作に備え role=tablist/tab を付与 -->
+        <div class="segment" role="tablist" aria-label="モード選択">
+          <button id="btn-stopwatch" role="tab" aria-selected="true" class="segment-btn is-active" type="button">ストップウォッチ</button>
+          <button id="btn-countdown" role="tab" aria-selected="false" class="segment-btn" type="button">カウントダウン</button>
+        </div>
+
+        <!-- 現在の時間表示。変化をスクリーンリーダーへ通知（aria-live） -->
+        <div class="timer-display" aria-live="polite" aria-atomic="true">
+          <span id="time" class="time-text">00:00.00</span>
+          <span id="status" class="sr-only" aria-live="polite"></span>
+        </div>
+
+        <!-- カウントダウン設定（ストップウォッチ時は非表示）。数値入力は min/max で制約 -->
+        <form id="countdown-form" class="countdown-fields" aria-label="カウントダウン設定">
+          <div class="field">
+            <label for="minutes">分</label>
+            <input id="minutes" class="input" type="number" inputmode="numeric" min="0" max="999" value="0" />
+          </div>
+          <div class="field">
+            <label for="seconds">秒</label>
+            <input id="seconds" class="input" type="number" inputmode="numeric" min="0" max="59" value="30" />
+          </div>
+        </form>
+
+        <!-- よく使うプリセット（1/10/15分）。押下で自動的にカウントダウン設定に反映 -->
+        <div class="presets" aria-label="プリセット時間">
+          <button type="button" class="btn btn-secondary preset-btn" data-ms="60000">1分</button>
+          <button type="button" class="btn btn-secondary preset-btn" data-ms="600000">10分</button>
+          <button type="button" class="btn btn-secondary preset-btn" data-ms="900000">15分</button>
+        </div>
+
+        <!-- 操作ボタン群。タッチターゲット 44px 以上・フォーカスリング付き -->
+        <div class="controls">
+          <button id="start" type="button" class="btn btn-primary">開始</button>
+          <button id="pause" type="button" class="btn btn-warning" disabled>一時停止</button>
+          <button id="reset" type="button" class="btn btn-danger" disabled>リセット</button>
+          <button id="lap" type="button" class="btn btn-secondary" aria-describedby="lap-desc" disabled>ラップ</button>
+        </div>
+        <p id="lap-desc" class="caption">ストップウォッチ時のみ使用可能</p>
+
+        <!-- ラップ一覧。ストップウォッチの記録を順次追加 -->
+        <div class="laps" aria-live="polite" aria-relevant="additions">
+          <h3 class="laps-title">ラップ</h3>
+          <ol id="lap-list" class="lap-list" aria-label="ラップ一覧"></ol>
+        </div>
+      </section>
+    </main>
+
+    <!-- フッター（補足情報） -->
+    <footer class="site-footer" role="contentinfo">
+      <div class="container">
+        <p class="caption">Learning Next 風 UI ガイドに準拠</p>
+      </div>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+  </html>
